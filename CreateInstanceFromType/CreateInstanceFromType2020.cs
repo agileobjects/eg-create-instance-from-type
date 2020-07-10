@@ -37,23 +37,28 @@
                 argumentTypes,
                 new ParameterModifier[0]);
 
+            // Get an Expressions representing the parameters 
+            // which will be passed to the Func:
+            var lambdaParameters = Expression.Parameter(typeof(object[]), "params");
+            
             // Get a set of Expressions representing the parameters 
-            // which will be passed to the Func, and another representing
-            // the parameters which will be passed to the constructor:
+            // which will be passed to the constructor:
             var argumentCount = argumentTypes.Length;
-            var lambdaParameters = new ParameterExpression[argumentCount];
             var ctorArguments = new Expression[argumentCount];
 
             for (var i = 0; i < argumentCount; ++i)
             {
                 var argumentType = argumentTypes[i];
-                var parameter = Expression.Parameter(typeof(object), "param" + i);
 
-                lambdaParameters[i] = parameter;
+                // Access the approriate Lambda parameter by index:
+                var lambdaParameter = Expression
+                    .ArrayAccess(lambdaParameters, Expression.Constant(i));
 
+                // Convert the lambda parameter to the constructor
+                // parameter type if necessary:
                 ctorArguments[i] = argumentType == typeof(object)
-                    ? (Expression)parameter
-                    : Expression.Convert(parameter, argumentType);
+                    ? (Expression)lambdaParameter
+                    : Expression.Convert(lambdaParameter, argumentType);
             }
 
             // Get an Expression representing the constructor call, 
