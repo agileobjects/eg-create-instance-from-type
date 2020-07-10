@@ -5,7 +5,7 @@
     using System.Linq.Expressions;
     using System.Reflection;
 
-    public static class CreateInstanceFromType2020
+    public static class CreateInstanceFromType2020RuntimeArgs
     {
         private static readonly ConcurrentDictionary<TypeFactoryKey, Func<object[], object>> _factoriesByType =
             new ConcurrentDictionary<TypeFactoryKey, Func<object[], object>>();
@@ -40,7 +40,7 @@
             // Get an Expressions representing the parameters 
             // which will be passed to the Func:
             var lambdaParameters = Expression.Parameter(typeof(object[]), "params");
-            
+
             // Get a set of Expressions representing the parameters 
             // which will be passed to the constructor:
             var argumentCount = argumentTypes.Length;
@@ -71,7 +71,7 @@
             return instanceCreationLambda.Compile();
         }
 
-        #region helper Classes
+        #region Helper Classes
 
         private class TypeFactoryKey
         {
