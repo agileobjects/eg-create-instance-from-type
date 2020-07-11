@@ -28,8 +28,7 @@
         {
             var argumentTypes = key.ArgumentTypes;
 
-            // Get the Constructor which matches the given argument 
-            // Types:
+            // The constructor which matches the given argument types:
             var instanceTypeCtor = key.Type.GetConstructor(
                 BindingFlags.Instance | BindingFlags.Public,
                 binder: null,
@@ -37,12 +36,12 @@
                 argumentTypes,
                 new ParameterModifier[0]);
 
-            // Get an Expressions representing the parameters 
-            // which will be passed to the Func:
+            // An Expression representing the parameter to pass
+            // to the Func:
             var lambdaParameters = Expression.Parameter(typeof(object[]), "params");
 
-            // Get a set of Expressions representing the parameters 
-            // which will be passed to the constructor:
+            // A set of Expressions representing the parameters to pass
+            // to the constructor:
             var argumentCount = argumentTypes.Length;
             var ctorArguments = new Expression[argumentCount];
 
@@ -61,10 +60,12 @@
                     : Expression.Convert(lambdaParameter, argumentType);
             }
 
-            // Get an Expression representing the constructor call, 
+            // An Expression representing the constructor call, 
             // passing in the constructor parameters:
             var instanceCreation = Expression.New(instanceTypeCtor, ctorArguments);
 
+            // Compile the Expression into a Func which takes an 
+            // object argument array and returns the constructed object:
             var instanceCreationLambda = Expression
                 .Lambda<Func<object[], object>>(instanceCreation, lambdaParameters);
 

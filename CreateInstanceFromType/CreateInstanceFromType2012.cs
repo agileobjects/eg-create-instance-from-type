@@ -123,8 +123,7 @@
 
         private static class InstanceCreationFactory<TArg1, TArg2, TArg3>
         {
-            // This dictionary will hold a cache of object-creation 
-            // functions, keyed by the Type to create:
+            // A dictionary of object-creation Funcs, keyed by the created type:
             private static readonly Dictionary<Type, Func<TArg1, TArg2, TArg3, object>>
                 _instanceCreationMethods = new Dictionary<Type, Func<TArg1, TArg2, TArg3, object>>();
 
@@ -155,15 +154,13 @@
                     typeof(TArg1), typeof(TArg2), typeof(TArg3)
                 };
 
-                // Get a collection of the constructor argument Types 
-                // we've been given; ignore any which are of the
-                // 'ignore this' Type:
+                // A collection of the constructor argument Types we've 
+                // been given; ignore any of the 'ignore this' Type:
                 Type[] constructorArgumentTypes = argumentTypes
                     .Where(t => t != typeof(TypeToIgnore))
                     .ToArray();
 
-                // Get the Constructor which matches the given argument 
-                // Types:
+                // The constructor which matches the given argument types:
                 var constructor = type.GetConstructor(
                     BindingFlags.Instance | BindingFlags.Public,
                     null,
@@ -171,8 +168,8 @@
                     constructorArgumentTypes,
                     new ParameterModifier[0]);
 
-                // Get a set of Expressions representing the parameters 
-                // which will be passed to the Func:
+                // A set of Expressions representing the parameters to 
+                // pass to the Func:
                 var lamdaParameterExpressions = new[]
                 {
                     Expression.Parameter(typeof(TArg1), "param1"),
@@ -180,14 +177,14 @@
                     Expression.Parameter(typeof(TArg3), "param3")
                 };
 
-                // Get a set of Expressions representing the parameters 
-                // which will be passed to the constructor:
+                // A set of Expressions representing the parameters to 
+                // pass to the constructor:
                 var constructorParameterExpressions =
                     lamdaParameterExpressions
                         .Take(constructorArgumentTypes.Length)
                         .ToArray();
 
-                // Get an Expression representing the constructor call, 
+                // An Expression representing the constructor call, 
                 // passing in the constructor parameters:
                 var constructorCallExpression = Expression
                     .New(constructor, constructorParameterExpressions);
@@ -200,6 +197,7 @@
                         lamdaParameterExpressions)
                     .Compile();
 
+                // Store the compiled Func in the cache Dictionary:
                 _instanceCreationMethods[type] = constructorCallingLambda;
             }
         }

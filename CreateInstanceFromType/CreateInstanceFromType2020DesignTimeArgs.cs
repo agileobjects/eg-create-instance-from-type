@@ -85,6 +85,7 @@ namespace CreateInstanceFromType
 
         private static class InstanceFactoryCache
         {
+            // A dictionary of object-creation Funcs, keyed by the created type:
             private static readonly ConcurrentDictionary<Type, Func<object>> _factoriesByType =
                 new ConcurrentDictionary<Type, Func<object>>();
 
@@ -92,10 +93,14 @@ namespace CreateInstanceFromType
             {
                 return _factoriesByType.GetOrAdd(type, t =>
                 {
+                    // The default, parameterless constructor:
                     var ctor = t.GetConstructor(Type.EmptyTypes);
 
+                    // An Expression representing the default constructor call:
                     var instanceCreation = Expression.New(ctor);
 
+                    // Compile the Expression into a Func which returns the
+                    // constructed object:
                     var instanceCreationLambda = Expression
                         .Lambda<Func<object>>(instanceCreation);
 
@@ -106,6 +111,7 @@ namespace CreateInstanceFromType
 
         private static class InstanceFactoryCache<TArg>
         {
+            // A dictionary of object-creation Funcs, keyed by the created type:
             private static readonly ConcurrentDictionary<Type, Func<TArg, object>> _factoriesByType =
                 new ConcurrentDictionary<Type, Func<TArg, object>>();
 
@@ -113,13 +119,22 @@ namespace CreateInstanceFromType
             {
                 return _factoriesByType.GetOrAdd(type, t =>
                 {
+                    // The argument type:
                     var argType = typeof(TArg);
 
+                    // The matching constructor:
                     var ctor = t.GetConstructor(new[] { argType });
+                    
+                    // An Expression representing the parameter to 
+                    // pass to the Func and constructor:
                     var argument = Expression.Parameter(argType, "param");
 
+                    // An Expression representing the constructor call, 
+                    // passing in the constructor parameter:
                     var instanceCreation = Expression.New(ctor, argument);
 
+                    // Compile the Expression into a Func which takes one 
+                    // argument and returns the constructed object:
                     var instanceCreationLambda = Expression
                         .Lambda<Func<TArg, object>>(instanceCreation, argument);
 
@@ -130,6 +145,7 @@ namespace CreateInstanceFromType
 
         private static class InstanceFactoryCache<TArg1, TArg2>
         {
+            // A dictionary of object-creation Funcs, keyed by the created type:
             private static readonly ConcurrentDictionary<Type, Func<TArg1, TArg2, object>> _factoriesByType =
                 new ConcurrentDictionary<Type, Func<TArg1, TArg2, object>>();
 
@@ -137,16 +153,25 @@ namespace CreateInstanceFromType
             {
                 return _factoriesByType.GetOrAdd(type, t =>
                 {
+                    // The argument types:
                     var arg1Type = typeof(TArg1);
                     var arg2Type = typeof(TArg2);
 
+                    // The matching constructor:
                     var ctor = t.GetConstructor(new[] { arg1Type, arg2Type });
+                    
+                    // A set of Expressions representing the parameters to 
+                    // pass to the Func and constructor:
                     var argument1 = Expression.Parameter(arg1Type, "param1");
                     var argument2 = Expression.Parameter(arg2Type, "param2");
 
+                    // An Expression representing the constructor call, 
+                    // passing in the constructor parameters:
                     var instanceCreation = Expression
                         .New(ctor, argument1, argument2);
 
+                    // Compile the Expression into a Func which takes two 
+                    // arguments and returns the constructed object:
                     var instanceCreationLambda = Expression
                         .Lambda<Func<TArg1, TArg2, object>>(instanceCreation, argument1, argument2);
 
@@ -157,6 +182,7 @@ namespace CreateInstanceFromType
 
         private static class InstanceFactoryCache<TArg1, TArg2, TArg3>
         {
+            // A dictionary of object-creation Funcs, keyed by the created type:
             private static readonly ConcurrentDictionary<Type, Func<TArg1, TArg2, TArg3, object>> _factoriesByType =
                 new ConcurrentDictionary<Type, Func<TArg1, TArg2, TArg3, object>>();
 
@@ -164,18 +190,27 @@ namespace CreateInstanceFromType
             {
                 return _factoriesByType.GetOrAdd(type, t =>
                 {
+                    // The argument types:
                     var arg1Type = typeof(TArg1);
                     var arg2Type = typeof(TArg2);
                     var arg3Type = typeof(TArg3);
 
+                    // The matching constructor:
                     var ctor = t.GetConstructor(new[] { arg1Type, arg2Type, arg3Type });
+                    
+                    // A set of Expressions representing the parameters to 
+                    // pass to the Func and constructor:
                     var argument1 = Expression.Parameter(arg1Type, "param1");
                     var argument2 = Expression.Parameter(arg2Type, "param2");
                     var argument3 = Expression.Parameter(arg3Type, "param3");
 
+                    // An Expression representing the constructor call, 
+                    // passing in the constructor parameters:
                     var instanceCreation = Expression
                         .New(ctor, argument1, argument2, argument3);
 
+                    // Compile the Expression into a Func which takes three 
+                    // arguments and returns the constructed object:
                     var instanceCreationLambda = Expression
                         .Lambda<Func<TArg1, TArg2, TArg3, object>>(
                             instanceCreation, argument1, argument2, argument3);
