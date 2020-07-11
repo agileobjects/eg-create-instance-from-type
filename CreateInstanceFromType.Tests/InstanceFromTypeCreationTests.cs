@@ -94,10 +94,11 @@ namespace CreateInstanceFromType.Tests
             var ctorNotFoundEx = Assert.Throws<NotSupportedException>(() =>
             {
                 CreateInstanceFromType2020RuntimeArgs
-                    .GetInstance(typeof(MultiTwoParamCtor), DateTime.Now, "hello!");
+                    .GetInstance(typeof(MultiTwoParamCtor), DateTime.Now, default(string));
             });
 
-            Assert.Equal("Failed to find a matching constructor", ctorNotFoundEx.Message);
+            Assert.Contains("Failed to find a matching constructor", ctorNotFoundEx.Message);
+            Assert.Contains("null arguments", ctorNotFoundEx.Message);
         }
 
         [Fact]
