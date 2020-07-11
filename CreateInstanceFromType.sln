@@ -7,7 +7,13 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreateInstanceFromType", "C
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreateInstanceFromType.Tests", "CreateInstanceFromType.Tests\CreateInstanceFromType.Tests.csproj", "{7457EA18-C405-411B-A527-ABD66CDC9C5E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CreateInstanceFromType.Benchmark", "CreateInstanceFromType.Benchmark\CreateInstanceFromType.Benchmark.csproj", "{84B1C66C-3020-4EB8-862A-C633ECF4164E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CreateInstanceFromType.Benchmark", "CreateInstanceFromType.Benchmark\CreateInstanceFromType.Benchmark.csproj", "{84B1C66C-3020-4EB8-862A-C633ECF4164E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{78A6EF7A-A91B-4E40-9F5E-D5292BBCD9BF}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSE = LICENSE
+		README.md = README.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
