@@ -171,7 +171,7 @@ namespace CreateInstanceFromType
                     var ctor = t.GetConstructor(new[] { arg1Type, arg2Type, arg3Type });
                     var argument1 = Expression.Parameter(arg1Type, "param1");
                     var argument2 = Expression.Parameter(arg2Type, "param2");
-                    var argument3 = Expression.Parameter(arg2Type, "param3");
+                    var argument3 = Expression.Parameter(arg3Type, "param3");
 
                     var instanceCreation = Expression
                         .New(ctor, argument1, argument2, argument3);

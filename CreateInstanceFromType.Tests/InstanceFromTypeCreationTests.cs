@@ -10,7 +10,7 @@ namespace CreateInstanceFromType.Tests
         [Fact]
         public void ShouldUseAParameterlessCtor()
         {
-            var instance = (Parameterless)CreateInstanceFromType2020RuntimeArgs
+            var instance = (Parameterless)CreateInstanceFromType2020DesignTimeArgs
                 .GetInstance(typeof(Parameterless));
 
             Assert.NotNull(instance);
@@ -19,7 +19,7 @@ namespace CreateInstanceFromType.Tests
         [Fact]
         public void ShouldUseASingleParameterCtor()
         {
-            var instance = (OneParamCtor)CreateInstanceFromType2020RuntimeArgs
+            var instance = (OneParamCtor)CreateInstanceFromType2020DesignTimeArgs
                 .GetInstance(typeof(OneParamCtor), "hello!");
 
             Assert.NotNull(instance);
@@ -29,7 +29,7 @@ namespace CreateInstanceFromType.Tests
         [Fact]
         public void ShouldUseATwoParameterCtor()
         {
-            var instance = (TwoParamCtor)CreateInstanceFromType2020RuntimeArgs
+            var instance = (TwoParamCtor)CreateInstanceFromType2020DesignTimeArgs
                 .GetInstance(typeof(TwoParamCtor), "hello again!", 123);
 
             Assert.NotNull(instance);
@@ -40,7 +40,7 @@ namespace CreateInstanceFromType.Tests
         [Fact]
         public void ShouldSelectACtorFromArguments()
         {
-            var twoParamInstance = (MultiCtor)CreateInstanceFromType2020RuntimeArgs
+            var twoParamInstance = (MultiCtor)CreateInstanceFromType2020DesignTimeArgs
                 .GetInstance(typeof(MultiCtor), "hello there!", 456);
 
             Assert.NotNull(twoParamInstance);
@@ -48,7 +48,7 @@ namespace CreateInstanceFromType.Tests
             Assert.Equal(456, twoParamInstance.IntValue);
             Assert.Equal(default, twoParamInstance.DateValue);
 
-            var oneParamInstance = (MultiCtor)CreateInstanceFromType2020RuntimeArgs
+            var oneParamInstance = (MultiCtor)CreateInstanceFromType2020DesignTimeArgs
                 .GetInstance(typeof(MultiCtor), "hello you!");
 
             Assert.NotNull(oneParamInstance);
@@ -56,7 +56,7 @@ namespace CreateInstanceFromType.Tests
             Assert.Equal(default, oneParamInstance.IntValue);
             Assert.Equal(default, twoParamInstance.DateValue);
 
-            var threeParamInstance = (MultiCtor)CreateInstanceFromType2020RuntimeArgs
+            var threeParamInstance = (MultiCtor)CreateInstanceFromType2020DesignTimeArgs
                 .GetInstance(typeof(MultiCtor), "hello blah!", 999, DateTime.MinValue);
 
             Assert.NotNull(threeParamInstance);
