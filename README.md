@@ -47,9 +47,9 @@ Example benchmarking results for .NET Core 3.1 are shown below:
 
 To note:
 
-1. My 2020 design-time code is between **1.5** and **2.7** times **faster** than my 2012 code.
+1. My 2020 design-time code is between **1.5** and **2.5** times **faster** than my 2012 code.
 
-2. My 2020 runtime code is between **6.6** and **6.9** times **faster** than `Activator.CreateInstance` for all 
-   except the parameterless case. It's **1.2** times **slower** for parameterless constructors.
+2. My 2020 runtime code is between **6.7** and **6.9** times **faster** than `Activator.CreateInstance` for all 
+   except the parameterless case. It's **1.3** times **slower** for parameterless constructors.
 
 Further discussion can be found on [my blog](https://agileobjects.co.uk/create-instance-of-type-net-core).
