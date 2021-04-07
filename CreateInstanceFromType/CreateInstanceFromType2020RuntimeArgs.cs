@@ -30,40 +30,64 @@
             var argumentTypes = key.ArgumentTypes;
             var argumentCount = argumentTypes.Length;
 
-            // The constructor which matches the given argument types:
-            var instanceTypeCtor = GetMatchingConstructor(key, argumentTypes, argumentCount);
+            NewExpression instanceCreation;
 
             // An Expression representing the parameter to pass
             // to the Func:
             var lambdaParameters = Expression.Parameter(typeof(object[]), "params");
 
-            // A set of Expressions representing the parameters to pass
-            // to the constructor:
-            var ctorArguments = new Expression[argumentCount];
-
-            for (var i = 0; i < argumentCount; ++i)
+            if (key.Type.IsValueType && argumentCount == 0)
             {
-                var argumentType = argumentTypes[i];
+                instanceCreation = Expression.New(key.Type);
+            }
+            else
+            {
+                // The constructor which matches the given argument types:
+                var instanceTypeCtor = GetMatchingConstructor(key, argumentTypes, argumentCount);
 
-                // Access the approriate Lambda parameter by index:
-                var lambdaParameter = Expression
-                    .ArrayAccess(lambdaParameters, Expression.Constant(i));
+                // A set of Expressions representing the parameters to pass
+                // to the constructor:
+                var ctorArguments = new Expression[argumentCount];
 
-                // Convert the lambda parameter to the constructor
-                // parameter type if necessary:
-                ctorArguments[i] = argumentType == typeof(object)
-                    ? (Expression)lambdaParameter
-                    : Expression.Convert(lambdaParameter, argumentType);
+                for (var i = 0; i < argumentCount; ++i)
+                {
+                    var argumentType = argumentTypes[i];
+
+                    // Access the approriate Lambda parameter by index:
+                    var lambdaParameter = Expression
+                        .ArrayAccess(lambdaParameters, Expression.Constant(i));
+
+                    // Convert the lambda parameter to the constructor
+                    // parameter type if necessary:
+                    ctorArguments[i] = argumentType == typeof(object)
+                        ? (Expression)lambdaParameter
+                        : Expression.Convert(lambdaParameter, argumentType);
+                }
+
+                // An Expression representing the constructor call, 
+                // passing in the constructor parameters:
+                instanceCreation = Expression.New(instanceTypeCtor, ctorArguments);
             }
 
-            // An Expression representing the constructor call, 
-            // passing in the constructor parameters:
-            var instanceCreation = Expression.New(instanceTypeCtor, ctorArguments);
+            Expression<Func<object[], object>> instanceCreationLambda;
 
-            // Compile the Expression into a Func which takes an 
-            // object argument array and returns the constructed object:
-            var instanceCreationLambda = Expression
+            if (key.Type.IsValueType)
+            { // a value type needs additional boxing
+                var valueInstanceCreationLambda = Expression
+                            .Lambda(instanceCreation, true);
+
+                Expression converted = Expression.Convert
+                    (valueInstanceCreationLambda.Body, typeof(object));
+
+                instanceCreationLambda = Expression.Lambda<Func<object[], object>>(converted, lambdaParameters);
+            }
+            else
+            {
+                // Compile the Expression into a Func which takes an 
+                // object argument array and returns the constructed object:
+                instanceCreationLambda = Expression
                 .Lambda<Func<object[], object>>(instanceCreation, lambdaParameters);
+            }
 
             return instanceCreationLambda.Compile();
         }
@@ -77,7 +101,7 @@
             {
                 return key.Type.GetConstructor(
                     Public | Instance,
-                    binder: null,
+                    Type.DefaultBinder,
                     CallingConventions.HasThis,
                     argumentTypes,
                     new ParameterModifier[0]) ??
@@ -117,7 +141,7 @@
 
                 matchingCtor = constructor;
 
-            NextConstructor:;
+                NextConstructor:;
             }
 
             if (matchingCtor == null)
