@@ -16,6 +16,24 @@ namespace CreateInstanceFromType.Tests
         }
 
         [Fact]
+        public void ShouldUseAParameterlessValueTypeCtor()
+        {
+            var instance = (Guid)CreateInstanceFromType2020RuntimeArgs
+                .GetInstance(typeof(Guid));
+
+            Assert.Equal(default, instance);
+        }
+        
+        [Fact]
+        public void ShouldUseAParameterlessValueTypeCtorDesign()
+        {
+            var instance = (Guid)CreateInstanceFromType2020DesignTimeArgs
+                .GetInstance(typeof(Guid));
+
+            Assert.Equal(default, instance);
+        }
+
+        [Fact]
         public void ShouldUseASingleParameterCtor()
         {
             var instance = (OneParamCtor)CreateInstanceFromType2020RuntimeArgs
@@ -23,6 +41,24 @@ namespace CreateInstanceFromType.Tests
 
             Assert.NotNull(instance);
             Assert.Equal("hello!", instance.Value);
+        }
+        
+        [Fact]
+        public void ShouldUseASingleParameterValueTypeCtor()
+        {
+            var instance = (Guid)CreateInstanceFromType2020RuntimeArgs
+                .GetInstance(typeof(Guid), "5e55498a-86e1-495c-b829-0c5170346ef5");
+
+            Assert.Equal(Guid.Parse("5e55498a-86e1-495c-b829-0c5170346ef5"), instance);
+        }
+        
+        [Fact]
+        public void ShouldUseASingleParameterValueTypeCtorDesign()
+        {
+            var instance = (Guid)CreateInstanceFromType2020DesignTimeArgs
+                .GetInstance(typeof(Guid), "5e55498a-86e1-495c-b829-0c5170346ef5");
+
+            Assert.Equal(Guid.Parse("5e55498a-86e1-495c-b829-0c5170346ef5"), instance);
         }
 
         [Fact]
