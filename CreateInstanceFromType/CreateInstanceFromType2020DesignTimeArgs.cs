@@ -99,11 +99,7 @@ namespace CreateInstanceFromType
                     if (t.IsValueType)
                     {
                         // A value type needs additional boxing:
-                        var valueInstanceCreationLambda = Expression
-                            .Lambda(instanceCreation);
-
-                        instanceCreation = Expression
-                            .Convert(valueInstanceCreationLambda.Body, typeof(object));
+                        instanceCreation = Expression.Convert(instanceCreation, typeof(object));
                     }
 
                     // Compile the Expression into a Func which returns the
@@ -143,11 +139,7 @@ namespace CreateInstanceFromType
                     if (t.IsValueType)
                     {
                         // A value type needs additional boxing:
-                        var valueInstanceCreationLambda = Expression
-                            .Lambda(instanceCreation);
-
-                        instanceCreation = Expression
-                            .Convert(valueInstanceCreationLambda.Body, typeof(object));
+                        instanceCreation = Expression.Convert(instanceCreation, typeof(object));
                     }
 
                     // Compile the Expression into a Func which takes one 
@@ -190,11 +182,7 @@ namespace CreateInstanceFromType
                     if (t.IsValueType)
                     {
                         // A value type needs additional boxing:
-                        var valueInstanceCreationLambda = Expression
-                            .Lambda(instanceCreation, true);
-
-                        instanceCreation = Expression.Convert
-                            (valueInstanceCreationLambda.Body, typeof(object));
+                        instanceCreation = Expression.Convert(instanceCreation, typeof(object));
                     }
 
                     // Compile the Expression into a Func which takes two 
@@ -237,13 +225,9 @@ namespace CreateInstanceFromType
                         .New(ctor, argument1, argument2, argument3);
 
                     if (t.IsValueType)
-                    { 
+                    {
                         // A value type needs additional boxing:
-                        var valueInstanceCreationLambda = Expression
-                            .Lambda(instanceCreation);
-
-                        instanceCreation = Expression
-                            .Convert(valueInstanceCreationLambda.Body, typeof(object));
+                        instanceCreation = Expression.Convert(instanceCreation, typeof(object));
                     }
 
                     // Compile the Expression into a Func which takes three 

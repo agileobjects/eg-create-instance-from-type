@@ -37,11 +37,8 @@
             if (key.Type.IsValueType)
             {
                 // A value type needs additional boxing:
-                var valueInstanceCreationLambda = Expression
-                    .Lambda(instanceCreation);
-
                 instanceCreation = Expression
-                    .Convert(valueInstanceCreationLambda.Body, typeof(object));
+                    .Convert(instanceCreation, typeof(object));
             }
 
             // Compile the Expression into a Func which takes an 
@@ -91,12 +88,8 @@
             return Expression.New(instanceTypeCtor, ctorArguments);
         }
 
-        private static ConstructorInfo GetMatchingConstructor(
-            TypeFactoryKey key,
-            Type[] argumentTypes)
+        private static ConstructorInfo GetMatchingConstructor(TypeFactoryKey key, Type[] argumentTypes)
         {
-            var argumentCount = argumentTypes.Length;
-
             if (!key.HasNullArgumentTypes)
             {
                 return key.Type.GetConstructor(
@@ -111,6 +104,7 @@
             var constructors = key.Type.GetConstructors(Public | Instance);
             var matchingCtor = default(ConstructorInfo);
             var parameters = default(ParameterInfo[]);
+            var argumentCount = argumentTypes.Length;
 
             for (int i = 0, l = constructors.Length; i < l; ++i)
             {
