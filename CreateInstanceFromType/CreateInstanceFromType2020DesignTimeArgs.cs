@@ -100,7 +100,7 @@ namespace CreateInstanceFromType
                     {
                         // A value type needs additional boxing:
                         var valueInstanceCreationLambda = Expression
-                            .Lambda(instanceCreation, tailCall: true);
+                            .Lambda(instanceCreation);
 
                         instanceCreation = Expression
                             .Convert(valueInstanceCreationLambda.Body, typeof(object));
@@ -144,7 +144,7 @@ namespace CreateInstanceFromType
                     {
                         // A value type needs additional boxing:
                         var valueInstanceCreationLambda = Expression
-                            .Lambda(instanceCreation, tailCall: true);
+                            .Lambda(instanceCreation);
 
                         instanceCreation = Expression
                             .Convert(valueInstanceCreationLambda.Body, typeof(object));
@@ -240,7 +240,7 @@ namespace CreateInstanceFromType
                     { 
                         // A value type needs additional boxing:
                         var valueInstanceCreationLambda = Expression
-                            .Lambda(instanceCreation, tailCall: true);
+                            .Lambda(instanceCreation);
 
                         instanceCreation = Expression
                             .Convert(valueInstanceCreationLambda.Body, typeof(object));
