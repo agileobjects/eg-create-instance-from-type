@@ -65,7 +65,7 @@
             }
 
             // The constructor which matches the given argument types:
-            var instanceTypeCtor = GetMatchingConstructor(key, argumentTypes, argumentCount);
+            var instanceTypeCtor = GetMatchingConstructor(key, argumentTypes);
 
             // A set of Expressions representing the parameters to pass
             // to the constructor:
@@ -93,9 +93,10 @@
 
         private static ConstructorInfo GetMatchingConstructor(
             TypeFactoryKey key,
-            Type[] argumentTypes,
-            int argumentCount)
+            Type[] argumentTypes)
         {
+            var argumentCount = argumentTypes.Length;
+
             if (!key.HasNullArgumentTypes)
             {
                 return key.Type.GetConstructor(
