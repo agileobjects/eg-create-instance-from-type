@@ -27,15 +27,42 @@
 
         private static Func<object[], object> CreateObjectFactory(TypeFactoryKey key)
         {
-            var argumentTypes = key.ArgumentTypes;
-            var argumentCount = argumentTypes.Length;
-
-            // The constructor which matches the given argument types:
-            var instanceTypeCtor = GetMatchingConstructor(key, argumentTypes, argumentCount);
-
             // An Expression representing the parameter to pass
             // to the Func:
             var lambdaParameters = Expression.Parameter(typeof(object[]), "params");
+
+            // Get an Expression representing the 'new' constructor call:
+            var instanceCreation = GetInstanceCreation(key, lambdaParameters);
+
+            if (key.Type.IsValueType)
+            {
+                // A value type needs additional boxing:
+                instanceCreation = Expression
+                    .Convert(instanceCreation, typeof(object));
+            }
+
+            // Compile the Expression into a Func which takes an 
+            // object argument array and returns the constructed object:
+            var instanceCreationLambda = Expression
+                .Lambda<Func<object[], object>>(instanceCreation, lambdaParameters);
+
+            return instanceCreationLambda.Compile();
+        }
+
+        private static Expression GetInstanceCreation(
+            TypeFactoryKey key,
+            Expression lambdaParameters)
+        {
+            var argumentTypes = key.ArgumentTypes;
+            var argumentCount = argumentTypes.Length;
+
+            if (key.Type.IsValueType && argumentCount == 0)
+            {
+                return Expression.New(key.Type);
+            }
+
+            // The constructor which matches the given argument types:
+            var instanceTypeCtor = GetMatchingConstructor(key, argumentTypes);
 
             // A set of Expressions representing the parameters to pass
             // to the constructor:
@@ -58,35 +85,26 @@
 
             // An Expression representing the constructor call, 
             // passing in the constructor parameters:
-            var instanceCreation = Expression.New(instanceTypeCtor, ctorArguments);
-
-            // Compile the Expression into a Func which takes an 
-            // object argument array and returns the constructed object:
-            var instanceCreationLambda = Expression
-                .Lambda<Func<object[], object>>(instanceCreation, lambdaParameters);
-
-            return instanceCreationLambda.Compile();
+            return Expression.New(instanceTypeCtor, ctorArguments);
         }
 
-        private static ConstructorInfo GetMatchingConstructor(
-            TypeFactoryKey key,
-            Type[] argumentTypes,
-            int argumentCount)
+        private static ConstructorInfo GetMatchingConstructor(TypeFactoryKey key, Type[] argumentTypes)
         {
             if (!key.HasNullArgumentTypes)
             {
                 return key.Type.GetConstructor(
                     Public | Instance,
-                    binder: null,
+                    Type.DefaultBinder,
                     CallingConventions.HasThis,
                     argumentTypes,
-                    new ParameterModifier[0]) ??
+                    Array.Empty<ParameterModifier>()) ??
                     throw new NotSupportedException("Failed to find a matching constructor");
             }
 
             var constructors = key.Type.GetConstructors(Public | Instance);
             var matchingCtor = default(ConstructorInfo);
             var parameters = default(ParameterInfo[]);
+            var argumentCount = argumentTypes.Length;
 
             for (int i = 0, l = constructors.Length; i < l; ++i)
             {

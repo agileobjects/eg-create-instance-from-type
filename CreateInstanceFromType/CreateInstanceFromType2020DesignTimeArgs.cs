@@ -93,11 +93,14 @@ namespace CreateInstanceFromType
             {
                 return _factoriesByType.GetOrAdd(type, t =>
                 {
-                    // The default, parameterless constructor:
-                    var ctor = t.GetConstructor(Type.EmptyTypes);
-
                     // An Expression representing the default constructor call:
-                    var instanceCreation = Expression.New(ctor);
+                    Expression instanceCreation = Expression.New(t);
+
+                    if (t.IsValueType)
+                    {
+                        // A value type needs additional boxing:
+                        instanceCreation = Expression.Convert(instanceCreation, typeof(object));
+                    }
 
                     // Compile the Expression into a Func which returns the
                     // constructed object:
@@ -124,14 +127,20 @@ namespace CreateInstanceFromType
 
                     // The matching constructor:
                     var ctor = t.GetConstructor(new[] { argType });
-                    
+
                     // An Expression representing the parameter to 
                     // pass to the Func and constructor:
                     var argument = Expression.Parameter(argType, "param");
 
                     // An Expression representing the constructor call, 
                     // passing in the constructor parameter:
-                    var instanceCreation = Expression.New(ctor, argument);
+                    Expression instanceCreation = Expression.New(ctor, argument);
+
+                    if (t.IsValueType)
+                    {
+                        // A value type needs additional boxing:
+                        instanceCreation = Expression.Convert(instanceCreation, typeof(object));
+                    }
 
                     // Compile the Expression into a Func which takes one 
                     // argument and returns the constructed object:
@@ -159,7 +168,7 @@ namespace CreateInstanceFromType
 
                     // The matching constructor:
                     var ctor = t.GetConstructor(new[] { arg1Type, arg2Type });
-                    
+
                     // A set of Expressions representing the parameters to 
                     // pass to the Func and constructor:
                     var argument1 = Expression.Parameter(arg1Type, "param1");
@@ -167,8 +176,14 @@ namespace CreateInstanceFromType
 
                     // An Expression representing the constructor call, 
                     // passing in the constructor parameters:
-                    var instanceCreation = Expression
+                    Expression instanceCreation = Expression
                         .New(ctor, argument1, argument2);
+
+                    if (t.IsValueType)
+                    {
+                        // A value type needs additional boxing:
+                        instanceCreation = Expression.Convert(instanceCreation, typeof(object));
+                    }
 
                     // Compile the Expression into a Func which takes two 
                     // arguments and returns the constructed object:
@@ -197,7 +212,7 @@ namespace CreateInstanceFromType
 
                     // The matching constructor:
                     var ctor = t.GetConstructor(new[] { arg1Type, arg2Type, arg3Type });
-                    
+
                     // A set of Expressions representing the parameters to 
                     // pass to the Func and constructor:
                     var argument1 = Expression.Parameter(arg1Type, "param1");
@@ -206,8 +221,14 @@ namespace CreateInstanceFromType
 
                     // An Expression representing the constructor call, 
                     // passing in the constructor parameters:
-                    var instanceCreation = Expression
+                    Expression instanceCreation = Expression
                         .New(ctor, argument1, argument2, argument3);
+
+                    if (t.IsValueType)
+                    {
+                        // A value type needs additional boxing:
+                        instanceCreation = Expression.Convert(instanceCreation, typeof(object));
+                    }
 
                     // Compile the Expression into a Func which takes three 
                     // arguments and returns the constructed object:
