@@ -93,30 +93,23 @@ namespace CreateInstanceFromType
             {
                 return _factoriesByType.GetOrAdd(type, t =>
                 {
-
                     // An Expression representing the default constructor call:
-                    var instanceCreation = Expression.New(t);
-
-                    Expression<Func<object>> instanceCreationLambda;
+                    Expression instanceCreation = Expression.New(t);
 
                     if (t.IsValueType)
-                    { // a value type needs additional boxing
-                        var valueInstanceCreationLambda = Expression
-                            .Lambda(instanceCreation, true);
-
-                        Expression converted = Expression.Convert
-                            (valueInstanceCreationLambda.Body, typeof(object));
-
-                        instanceCreationLambda = Expression.Lambda<Func<object>>(converted);
-
-                    }
-                    else
                     {
-                        // Compile the Expression into a Func which returns the
-                        // constructed object:
-                        instanceCreationLambda = Expression
-                            .Lambda<Func<object>>(instanceCreation);
+                        // A value type needs additional boxing:
+                        var valueInstanceCreationLambda = Expression
+                            .Lambda(instanceCreation, tailCall: true);
+
+                        instanceCreation = Expression
+                            .Convert(valueInstanceCreationLambda.Body, typeof(object));
                     }
+
+                    // Compile the Expression into a Func which returns the
+                    // constructed object:
+                    var instanceCreationLambda = Expression
+                        .Lambda<Func<object>>(instanceCreation);
 
                     return instanceCreationLambda.Compile();
                 });
@@ -145,30 +138,22 @@ namespace CreateInstanceFromType
 
                     // An Expression representing the constructor call, 
                     // passing in the constructor parameter:
-                    var instanceCreation = Expression.New(ctor, argument);
+                    Expression instanceCreation = Expression.New(ctor, argument);
+
+                    if (t.IsValueType)
+                    {
+                        // A value type needs additional boxing:
+                        var valueInstanceCreationLambda = Expression
+                            .Lambda(instanceCreation, tailCall: true);
+
+                        instanceCreation = Expression
+                            .Convert(valueInstanceCreationLambda.Body, typeof(object));
+                    }
 
                     // Compile the Expression into a Func which takes one 
                     // argument and returns the constructed object:
-                    Expression<Func<TArg, object>> instanceCreationLambda;
-
-                    if (t.IsValueType)
-                    { // a value type needs additional boxing
-                        var valueInstanceCreationLambda = Expression
-                            .Lambda(instanceCreation, true);
-
-                        Expression converted = Expression.Convert
-                            (valueInstanceCreationLambda.Body, typeof(object));
-
-                        instanceCreationLambda = Expression.Lambda<Func<TArg, object>>(converted, argument);
-
-                    }
-                    else
-                    {
-                        // Compile the Expression into a Func which returns the
-                        // constructed object:
-                        instanceCreationLambda = Expression
-                            .Lambda<Func<TArg, object>>(instanceCreation, argument);
-                    }
+                    var instanceCreationLambda = Expression
+                        .Lambda<Func<TArg, object>>(instanceCreation, argument);
 
                     return instanceCreationLambda.Compile();
                 });
@@ -199,31 +184,23 @@ namespace CreateInstanceFromType
 
                     // An Expression representing the constructor call, 
                     // passing in the constructor parameters:
-                    var instanceCreation = Expression
+                    Expression instanceCreation = Expression
                         .New(ctor, argument1, argument2);
 
-                    // Compile the Expression into a Func which takes two 
-                    // arguments and returns the constructed object:
-                    Expression<Func<TArg1, TArg2, object>> instanceCreationLambda;
-
                     if (t.IsValueType)
-                    { // a value type needs additional boxing
+                    {
+                        // A value type needs additional boxing:
                         var valueInstanceCreationLambda = Expression
                             .Lambda(instanceCreation, true);
 
-                        Expression converted = Expression.Convert
+                        instanceCreation = Expression.Convert
                             (valueInstanceCreationLambda.Body, typeof(object));
-
-                        instanceCreationLambda = Expression.Lambda<Func<TArg1, TArg2, object>>(converted, argument1, argument2);
-
                     }
-                    else
-                    {
-                        // Compile the Expression into a Func which returns the
-                        // constructed object:
-                        instanceCreationLambda = Expression
-                            .Lambda<Func<TArg1, TArg2, object>>(instanceCreation, argument1, argument2);
-                    }
+
+                    // Compile the Expression into a Func which takes two 
+                    // arguments and returns the constructed object:
+                    var instanceCreationLambda = Expression
+                        .Lambda<Func<TArg1, TArg2, object>>(instanceCreation, argument1, argument2);
 
                     return instanceCreationLambda.Compile();
                 });
@@ -256,31 +233,24 @@ namespace CreateInstanceFromType
 
                     // An Expression representing the constructor call, 
                     // passing in the constructor parameters:
-                    var instanceCreation = Expression
+                    Expression instanceCreation = Expression
                         .New(ctor, argument1, argument2, argument3);
+
+                    if (t.IsValueType)
+                    { 
+                        // A value type needs additional boxing:
+                        var valueInstanceCreationLambda = Expression
+                            .Lambda(instanceCreation, tailCall: true);
+
+                        instanceCreation = Expression
+                            .Convert(valueInstanceCreationLambda.Body, typeof(object));
+                    }
 
                     // Compile the Expression into a Func which takes three 
                     // arguments and returns the constructed object:
-                    Expression<Func<TArg1, TArg2, TArg3, object>> instanceCreationLambda;
-
-                    if (t.IsValueType)
-                    { // a value type needs additional boxing
-                        var valueInstanceCreationLambda = Expression
-                            .Lambda(instanceCreation, true);
-
-                        Expression converted = Expression.Convert
-                            (valueInstanceCreationLambda.Body, typeof(object));
-
-                        instanceCreationLambda = Expression.Lambda<Func<TArg1, TArg2, TArg3, object>>(converted, argument1, argument2, argument3);
-
-                    }
-                    else
-                    {
-                        // Compile the Expression into a Func which returns the
-                        // constructed object:
-                        instanceCreationLambda = Expression
-                            .Lambda<Func<TArg1, TArg2, TArg3, object>>(instanceCreation, argument1, argument2, argument3);
-                    }
+                    var instanceCreationLambda = Expression
+                        .Lambda<Func<TArg1, TArg2, TArg3, object>>(
+                            instanceCreation, argument1, argument2, argument3);
 
                     return instanceCreationLambda.Compile();
                 });
