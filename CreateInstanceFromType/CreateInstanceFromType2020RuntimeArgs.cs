@@ -56,7 +56,7 @@
             var argumentTypes = key.ArgumentTypes;
             var argumentCount = argumentTypes.Length;
 
-            if (key.Type.IsValueType && argumentCount == 0)
+            if (argumentCount == 0)
             {
                 return Expression.New(key.Type);
             }
